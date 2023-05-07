@@ -1,15 +1,17 @@
 package nss;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
+@RequestMapping("/")
 public class ViewHandler {
-
-    @RequestMapping("/main.go")
-    public String main(Model model) {
-        model.addAttribute("test-attribute", "test-attribute");
-        return "main";
+    
+    @RequestMapping("main.go")
+    public ModelAndView main(ModelAndView mv) {
+        mv.addObject("test-attribute", "test-attribute");
+        mv.setViewName("main");
+        return mv;
     }
 }
