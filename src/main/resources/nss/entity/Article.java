@@ -1,7 +1,7 @@
 package nss.entity;
 
-public class Article{
-    //P
+public class Article extends Template{
+    private String id;
     private int ruleNum;
     private int chapterNum;
     private String chapterName;
@@ -13,7 +13,20 @@ public class Article{
     private double score;
     
     public Article(){}
+
+    public String getId() {return id;}
+    public int getRuleNum() {return ruleNum;}
+    public int getChapterNum() {return chapterNum;}
+    public String getChapterName() {return chapterName;}
+    public int getSectionNum() {return sectionNum;}
+    public String getSectionName() {return sectionName;}
+    public int getArticleNum() {return articleNum;}
+    public String getArticleName() {return articleName;}
+    public String getArticleContent() {return articleContent;}
+    public double getScore() {return score;}
     
+    
+    public void setId(String id) {this.id = id;}
     public void setRuleNum(int ruleNum) {this.ruleNum = ruleNum;}
     public void setChapterNum(int chapterNum) {this.chapterNum = chapterNum;}
     public void setChapterName(String chapterName) {this.chapterName = chapterName;}

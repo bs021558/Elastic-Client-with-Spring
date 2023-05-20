@@ -1,6 +1,6 @@
 package nss.entity;
 
-public class ResponseTemplate {
+public class Template {
     private double score;
     private Object source;
     public double getScore() {
