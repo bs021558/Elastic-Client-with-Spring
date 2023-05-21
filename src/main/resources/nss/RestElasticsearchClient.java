@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -27,15 +26,10 @@ import nss.entity.Template;
 @RestController
 public class RestElasticsearchClient {
 
-    private final String elasticServer = "localhost";
+    String elasticServer = "localhost";
 
     @Autowired
     Logger logger;
-    DataStreamer dataStreamer;
-
-    public RestElasticsearchClient restElasticsearchClient() {
-        return this;
-    }
 
     // Create the low-level client
     RestClient restClient = RestClient.builder(
@@ -48,16 +42,19 @@ public class RestElasticsearchClient {
     // And create the API client
     ElasticsearchClient client = new ElasticsearchClient(transport);
 
-    @RequestMapping("create.go")
     public void create() throws ElasticsearchException, IOException {
         client.indices().create(c -> c.index("rules"));
     }
 
-    @RequestMapping("bulk.go")
-    public Boolean bulk(Model model) throws ElasticsearchException, IOException {
+    public void index(Article article) throws ElasticsearchException, IOException{
+        IndexResponse response = client.index(i -> i
+            .index("rules")
+            .id(article.getId())
+            .document(article)
+        );
+    }
+    public Boolean indexBulk(ArrayList<Article> articles) throws ElasticsearchException, IOException {
         Boolean success = false;
-        ArrayList<Article> articles = dataStreamer.fetchArticles(model);
-
         BulkRequest.Builder br = new BulkRequest.Builder();
 
         for (Article article : articles) {
@@ -82,12 +79,11 @@ public class RestElasticsearchClient {
             success = true;
         }
         return success;
+
     }
 
-    @RequestMapping("search.go")
-    public ArrayList<Article> simpleSearch(String query) throws ElasticsearchException, IOException {
+    public ArrayList<Article> searchMatch(String query) throws ElasticsearchException, IOException {
         ArrayList<Article> articles = new ArrayList<Article>();
-
         // Query using fluent DSL
         SearchResponse<Template> response = client.search(s -> s
                 .index("rules")
@@ -121,4 +117,6 @@ public class RestElasticsearchClient {
         }
         return articles;
     }
+
 }
+    

@@ -10,7 +10,6 @@ public class ViewHandler {
     
     @RequestMapping("main.go")
     public ModelAndView main(ModelAndView mv) {
-        mv.addObject("test-attribute", "test-attribute");
         mv.setViewName("main");
         return mv;
     }
