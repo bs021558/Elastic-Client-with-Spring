@@ -2,8 +2,6 @@ package nss;
 
 import java.util.ArrayList;
 
-import org.springframework.ui.Model;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

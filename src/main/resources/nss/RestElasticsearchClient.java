@@ -11,7 +11,6 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -47,7 +46,7 @@ public class RestElasticsearchClient {
     }
 
     public void index(Article article) throws ElasticsearchException, IOException{
-        IndexResponse response = client.index(i -> i
+        client.index(i -> i
             .index("rules")
             .id(article.getId())
             .document(article)
