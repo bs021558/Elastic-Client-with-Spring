@@ -8,15 +8,10 @@ import com.google.gson.reflect.TypeToken;
 import nss.entity.Article;
 
 public class DocStreamer {
-    public Article fetchArticle(String jsonStringified) {
-        Gson gson = new Gson();
-        Article article = gson.fromJson(jsonStringified, Article.class);
-        return article;
-    }
-    public ArrayList<Article> fetchArticles(String jsonStringified) {
+    public ArrayList<Article> fetchArticles(String jsonString) {
         ArrayList<Article> articles = new ArrayList<Article>();
         Gson gson = new Gson();
-        articles = gson.fromJson(jsonStringified, new TypeToken<ArrayList<Article>>(){}.getType());
+        articles = gson.fromJson(jsonString, new TypeToken<ArrayList<Article>>(){}.getType());
         return articles;
     }
 }
