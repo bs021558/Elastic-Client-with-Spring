@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.stereotype.Repository;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
@@ -20,19 +19,20 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 import nss.entity.Article;
+import nss.entity.Order;
 import nss.entity.Template;
 
-@RestController
+@Repository
 public class RestElasticsearchClient {
 
-    String elasticServer = "localhost";
+    String elasticServerAdress = "localhost";
 
     @Autowired
     Logger logger;
 
     // Create the low-level client
     RestClient restClient = RestClient.builder(
-            new HttpHost(elasticServer, 9200)).build();
+            new HttpHost(elasticServerAdress, 9200)).build();
 
     // Create the transport with a Jackson mapper
     ElasticsearchTransport transport = new RestClientTransport(
@@ -88,7 +88,7 @@ public class RestElasticsearchClient {
                 .index("rules")
                 .query(q -> q
                         .match(t -> t
-                                .field("article_content")
+                                .field("content")
                                 .query(query))),
                 Template.class);
 
@@ -115,6 +115,38 @@ public class RestElasticsearchClient {
             articles.add(article);
         }
         return articles;
+    }
+    public ArrayList<Order> testSearchMatch(String query) throws ElasticsearchException, IOException {
+        SearchResponse<Order> response = client.search(s -> s
+                .index("kibana_sample_data_ecommerce")
+                .query(q -> q
+                        .match(t -> t
+                                .field("category")
+                                .query(query))),
+                Order.class);
+
+        // result information
+        TotalHits total = response.hits().total();
+        logger.info("There are more than " + total.value() + " results");
+        ArrayList<Order> orders = new ArrayList<Order>();
+        /*
+         * hit is like...
+         * {
+         * "_index": "my_index",
+         * "_type": "_doc",
+         * "_id": "1",
+         * "_score": 1.0,
+         * "_source": {
+         * "field1": "value1",
+         * "field2": "value2"
+         * }
+         */
+        for (Hit<Order> hit : response.hits().hits()) {
+            Order order = new Order();
+            order = (Order) hit.source();
+            orders.add(order);
+        }
+        return orders;
     }
 
 }
