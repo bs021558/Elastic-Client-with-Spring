@@ -1,6 +1,9 @@
 package nss.entity;
 
-public class Article extends Template{
+/*
+ * entity for rules and should be fitted to response
+ */
+public class Article{
     private String id;
     private int ruleNum;
     private int chapterNum;

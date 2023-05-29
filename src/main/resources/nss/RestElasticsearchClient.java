@@ -20,11 +20,15 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 import nss.entity.Article;
 import nss.entity.Order;
-import nss.entity.Template;
 
 @Repository
-public class RestElasticsearchClient {
+public class RestElasticsearchClient implements RestElasticsearchClientInterface {
 
+    /*
+     ***** Connection creation *****
+     */
+
+    //Elasticsearch server address
     String elasticServerAdress = "localhost";
 
     @Autowired
@@ -41,10 +45,18 @@ public class RestElasticsearchClient {
     // And create the API client
     ElasticsearchClient client = new ElasticsearchClient(transport);
 
-    public void create() throws ElasticsearchException, IOException {
-        client.indices().create(c -> c.index("rules"));
+    /*
+     * Create a single index
+     */
+    @Override
+    public void create(String indexName) throws ElasticsearchException, IOException {
+        client.indices().create(c -> c.index(indexName));
     }
 
+    /*
+     * Simply index a single document
+     */
+    @Override
     public void index(Article article) throws ElasticsearchException, IOException{
         client.index(i -> i
             .index("rules")
@@ -52,6 +64,11 @@ public class RestElasticsearchClient {
             .document(article)
         );
     }
+
+    /*
+     * Index multiple documents
+     */
+    @Override
     public Boolean indexBulk(ArrayList<Article> articles) throws ElasticsearchException, IOException {
         Boolean success = false;
         BulkRequest.Builder br = new BulkRequest.Builder();
@@ -81,22 +98,29 @@ public class RestElasticsearchClient {
 
     }
 
+    /*
+     * Search using simple match query
+     */
+    @Override
     public ArrayList<Article> searchMatch(String query) throws ElasticsearchException, IOException {
         ArrayList<Article> articles = new ArrayList<Article>();
-        // Query using fluent DSL
-        SearchResponse<Template> response = client.search(s -> s
-                .index("rules")
+        // you can desing the query here using fluent DSL
+        SearchResponse<Article> response = client.search(s -> s
+                .index("articles")
                 .query(q -> q
                         .match(t -> t
                                 .field("content")
                                 .query(query))),
-                Template.class);
+                Article.class);
 
         // result information
         TotalHits total = response.hits().total();
 
+        //Optional logging
         logger.info("There are more than " + total.value() + " results");
 
+        
+        for (Hit<Article> hit : response.hits().hits()) {
         /*
          * hit is like...
          * {
@@ -109,19 +133,22 @@ public class RestElasticsearchClient {
          * "field2": "value2"
          * }
          */
-        for (Hit<Template> hit : response.hits().hits()) {
             Article article = (Article) hit.source();
             article.setScore(hit.score());
             articles.add(article);
         }
         return articles;
     }
+    
+    /*
+     * Test the search function
+     */
     public ArrayList<Order> testSearchMatch(String query) throws ElasticsearchException, IOException {
         SearchResponse<Order> response = client.search(s -> s
                 .index("kibana_sample_data_ecommerce")
                 .query(q -> q
                         .match(t -> t
-                                .field("category")
+                                .field("products.product_name")
                                 .query(query))),
                 Order.class);
 

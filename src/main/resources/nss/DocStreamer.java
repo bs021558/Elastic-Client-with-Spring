@@ -8,8 +8,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import nss.entity.Article;
+
 @Service
 public class DocStreamer {
+    /*
+     * Make serialized json to ArrayList<Article>
+     */
     public ArrayList<Article> fetchArticles(String jsonString) {
         ArrayList<Article> articles = new ArrayList<Article>();
         Gson gson = new Gson();

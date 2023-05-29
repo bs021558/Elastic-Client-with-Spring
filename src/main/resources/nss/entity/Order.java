@@ -1,8 +1,10 @@
 package nss.entity;
 
 import java.util.List;
-
-public class Order extends Template {
+/*
+ * It is test entity for being mapped to kibana official data sample 'kibana_sample_data_ecommerce'
+ */
+public class Order{
     String order_date;
     List<String> category;
     String taxful_total_price;

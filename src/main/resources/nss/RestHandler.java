@@ -17,6 +17,9 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import nss.entity.Article;
 import nss.entity.Order;
 
+/*
+ * REST endpoints
+ */
 @RestController
 @RequestMapping("/")
 public class RestHandler {
@@ -27,12 +30,12 @@ public class RestHandler {
     DocStreamer docStreamer;
 
     @PostMapping("create.go")
-    public void create() throws ElasticsearchException, IOException {
-        restClient.create();
+    public void create(@RequestBody String indexName) throws ElasticsearchException, IOException {
+        restClient.create(indexName);
     }
     @PostMapping("index.go")
-    public Boolean index(@RequestParam String jsonStringified) throws ElasticsearchException, IOException {
-        ArrayList<Article> articles = docStreamer.fetchArticles(jsonStringified);
+    public Boolean index(@RequestBody String jsonString) throws ElasticsearchException, IOException {
+        ArrayList<Article> articles = docStreamer.fetchArticles(jsonString);
         return restClient.indexBulk(articles);
     }
 

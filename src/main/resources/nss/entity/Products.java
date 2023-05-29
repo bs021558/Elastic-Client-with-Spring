@@ -1,8 +1,11 @@
 package nss.entity;
 
 import java.util.List;
-
+/*
+ * It is test entity for being mapped to kibana official data sample 'kibana_sample_data_ecommerce'
+ */
 public class Products {
+    //If there are multiple data in a single field, the variable should be list.
     List<String> price;
     String product_name;
     List<String> manufacturer;
